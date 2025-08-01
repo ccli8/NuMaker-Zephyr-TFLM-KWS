@@ -1,0 +1,67 @@
+# Copyright (c) 2025 Nuvoton Technology Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+config NVT_ML_REQUIRES_ETHOS_U
+	bool
+	select ETHOS_U
+
+config NVT_ML_ETHOS_U_PROFILE
+	bool "Enable Ethos-U profiling"
+	depends on NVT_ML_REQUIRES_ETHOS_U
+	help
+	  Enable Ethos-U profiling
+
+config NVT_ML_TFLM_TENSOR_ARENA_SIZE
+	int "TFLM tensor arena size"
+	default 280000
+	help
+	  Define TFLM tensor arena size
+
+choice NVT_ML_KWS_INPUT_CHOICE
+	prompt "Choose ML keyword spotting input source"
+	default NVT_ML_KWS_INPUT_DMIC if BOARD_NUMAKER_M55M1
+
+config NVT_ML_KWS_INPUT_DMIC
+	bool "DMIC as KWS input"
+	help
+	  Use digital microphone as keyword spotting input
+
+config NVT_ML_KWS_INPUT_WAVE_BLOB
+	bool "Wave blob as KWS input"
+	help
+	  Use embedded wave blob as keyword spotting input
+
+endchoice
+
+choice NVT_ML_KWS_MODEL_CHOICE
+	prompt "Choose ML keyword spotting model"
+	default NVT_ML_KWS_MODEL_DS_CNN
+
+config NVT_ML_KWS_MODEL_DS_CNN
+	bool "ML DS CNN keyword spotting model"
+	select NVT_ML_REQUIRES_ETHOS_U
+
+config NVT_ML_KWS_MODEL_MICRONET
+	bool "ML MicroNet keyword spotting model"
+	select NVT_ML_REQUIRES_ETHOS_U
+
+endchoice
+
+config NVT_ML_KWS_OUTPUT_MQTT
+	bool "MQTT as KWS output"
+	default y if DNS_RESOLVER
+	depends on ETH_NUMAKER || WIFI_ESP_AT
+	select MQTT_LIB
+	help
+	  Use mqtt as keyword spotting output
+
+config NVT_ML_KWS_MQTT_TOPIC
+	string "Un-namespaced name of MQTT topic"
+	default "kws"
+	depends on NVT_ML_KWS_OUTPUT_MQTT
+	help
+	  Un-namespaced name of mqtt topic. The full topic name will
+	  namespace as <CLIENT_ID>/<NVT_ML_KWS_MQTT_TOPIC> where to
+	  publish keyword spotting output.
+
+source "Kconfig.zephyr"

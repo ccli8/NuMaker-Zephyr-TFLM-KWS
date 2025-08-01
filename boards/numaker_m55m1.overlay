@@ -1,0 +1,17 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+&npu0 {
+	status = "okay";
+};
+
+/* DMIC */
+&gpiob {
+	status = "okay";
+};
+
+/* Some EMAC pins need to adjust skew and so GPIOE port needs to be
+ * enabled. This will become duplicate and can be removed when upstream.
+ */
+&gpioe {
+	status = "okay";
+};

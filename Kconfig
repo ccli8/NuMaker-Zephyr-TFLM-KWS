@@ -1,6 +1,17 @@
 # Copyright (c) 2025 Nuvoton Technology Corporation
 # SPDX-License-Identifier: Apache-2.0
 
+config NVT_ML_HYPERRAM
+	bool
+
+config NVT_ML_REQUIRES_HYPERRAM
+	bool
+	select NVT_ML_HYPERRAM
+
+config NVT_ML_HYPERRAM_TENSOR_ARENA
+	bool "Allocate TFLM tensor arena in HyperRAM"
+	select NVT_ML_REQUIRES_HYPERRAM
+
 config NVT_ML_REQUIRES_ETHOS_U
 	bool
 	select ETHOS_U

@@ -61,6 +61,10 @@ file(GLOB_RECURSE SOURCE_DEVICE
 if(NOT CONFIG_NVT_ML_KWS_INPUT_DMIC)
     list(FILTER SOURCE_DEVICE EXCLUDE REGEX ".*(DMIC)|(dmic).*\\.c.*$")
 endif()
+# Exclude HyperRAM*.c* or hyperram*.c* files if not enabled
+if(NOT CONFIG_NVT_ML_HYPERRAM)
+    list(FILTER SOURCE_DEVICE EXCLUDE REGEX ".*(HyperRAM)|(hyperram).*\\.c.*$")
+endif()
 
 # Add all ml-embedded-evaluation-kit_clone *.cc/*.cpp/*.c files
 file(GLOB_RECURSE SOURCE_ML_EMBEDDED_EVALUATION_KIT_CLONE
@@ -134,3 +138,6 @@ target_sources(app
 
 # Add networking common code
 include(${ZEPHYR_BASE}/samples/net/common/common.cmake)
+
+# Add HyperRAM sections
+zephyr_linker_sources(SECTIONS hyperram.ld)

@@ -156,6 +156,31 @@ extern size_t GetModelLen();
 } /* namespace app */
 } /* namespace arm */
 
+
+#if defined(__ZEPHYR__)
+#if defined(CONFIG_NVT_ML_HYPERRAM)
+#include <zephyr/arch/common/init.h>
+
+extern char __hyperram_data_start[];
+extern char __hyperram_data_end[];
+extern char __hyperram_bss_start[];
+extern char __hyperram_bss_end[];
+extern char __hyperram_data_load_start[];
+
+static void HyperRAM_InitCRT(void)
+{
+    /* Initialize .hyperram.data* sections per load sections */
+    memcpy(&__hyperram_data_start,
+           &__hyperram_data_load_start,
+           __hyperram_data_end - __hyperram_data_start);
+
+    /* Initialize .hyperram.bss* sections to zero */
+    memset(&__hyperram_bss_start, 0,
+	   (uintptr_t) &__hyperram_bss_end - (uintptr_t) &__hyperram_bss_start);
+}
+#endif
+#endif
+
 int main()
 {
     /* Initialise the UART module to allow printf related functions (if using retarget) */
@@ -163,6 +188,10 @@ int main()
 
 #if defined(__ZEPHYR__)
     int rc = 0;
+
+#if defined(CONFIG_NVT_ML_HYPERRAM)
+    HyperRAM_InitCRT();
+#endif
 
 #if defined(CONFIG_NVT_ML_KWS_OUTPUT_MQTT)
     static char mqtt_client_id[30];

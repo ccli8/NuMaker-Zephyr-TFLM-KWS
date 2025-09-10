@@ -63,7 +63,11 @@ extern "C" {
 #undef MODEL_SECTION
 #define MODEL_SECTION               section(".rodata.tflm_model")
 #undef ACTIVATION_BUF_SECTION
+#if defined(CONFIG_NVT_ML_HYPERRAM_TENSOR_ARENA)
+#define ACTIVATION_BUF_SECTION      section(".hyperram.noinit.tflm_arena")
+#else
 #define ACTIVATION_BUF_SECTION      section(".noinit.tflm_arena")
+#endif
 #undef IFM_BUF_SECTION
 #define IFM_BUF_SECTION             section(".rodata.tflm_input")
 #undef LABEL_SECTION

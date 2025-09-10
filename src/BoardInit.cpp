@@ -13,7 +13,19 @@
 
 #include "ethosu_npu_init.h"
 
+#if defined(__ZEPHYR__)
+#if defined(CONFIG_NVT_ML_HYPERRAM)
+#include "hyperram_code.h"
+#endif
+#endif
+
 #define DESIGN_NAME "M55M1"
+
+#if defined(__ZEPHYR__)
+#if defined(CONFIG_NVT_ML_HYPERRAM)
+#define HYPERRAM_SPIM_PORT SPIM0
+#endif
+#endif
 
 static void SYS_Init(void)
 {
@@ -44,6 +56,9 @@ static void SYS_Init(void)
     /* Set multi-function pins for DMIC */
     SET_DMIC0_CLK_PB4();
     SET_DMIC0_DAT_PB5();
+#endif
+#if defined(CONFIG_NVT_ML_HYPERRAM)
+    HyperRAM_PinConfig(HYPERRAM_SPIM_PORT);
 #endif
 #else
     /* Enable Internal RC 12MHz clock */
@@ -134,6 +149,14 @@ int BoardInit(void)
 #endif
 
     SYS_LockReg();                   /* Unlock register lock protect */
+
+#if defined(__ZEPHYR__)
+#if defined(CONFIG_NVT_ML_HYPERRAM)
+    HyperRAM_Init(HYPERRAM_SPIM_PORT);
+    /* Enter direct-mapped mode to run new applications */
+    SPIM_HYPER_EnterDirectMapMode(HYPERRAM_SPIM_PORT);
+#endif
+#endif
 
     info("%s: complete\n", __FUNCTION__);
 
